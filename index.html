@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular - Ingeniería de Sistemas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        .progress-container {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .basicas { border-left: 3px solid #3498db; }
+        .ingenieria { border-left: 3px solid #2ecc71; }
+        .aplicada { border-left: 3px solid #9b59b6; }
+        .complementaria { border-left: 3px solid #e67e22; }
+
+        .semesters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .semester {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .semester-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .semester-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .semester-credits {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .subject {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .subject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .subject.completed {
+            background: #f8f9fa;
+            color: #95a5a6;
+            text-decoration: line-through;
+        }
+
+        .subject-name {
+            font-weight: 500;
+            color: inherit;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .subject-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: inherit;
+        }
+
+        .subject-credits {
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+
+        .subject.basicas { border-left-color: #3498db; }
+        .subject.ingenieria { border-left-color: #2ecc71; }
+        .subject.aplicada { border-left-color: #9b59b6; }
+        .subject.complementaria { border-left-color: #e67e22; }
+
+        .reset-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            color: #e74c3c;
+            border: 1px solid #eaeaea;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reset-btn:hover {
+            background: #f5f5f5;
+            transform: rotate(90deg);
+        }
+
+        .congrats {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #2c3e50;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .congrats.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Malla Curricular - Ingeniería de Sistemas</h1>
+            <p>Marca las materias completadas para visualizar tu progreso</p>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Progreso</span>
+                    <span id="progressPercentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="completedCount">0</div>
+                <div class="stat-label">Materias completadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">47</div>
+                <div class="stat-label">Total de materias</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedCredits">0</div>
+                <div class="stat-label">Créditos completados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">160</div>
+                <div class="stat-label">Créditos totales</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item basicas">Ciencias Básicas</div>
+            <div class="legend-item ingenieria">C.B. Ingeniería</div>
+            <div class="legend-item aplicada">Ing. Aplicada</div>
+            <div class="legend-item complementaria">Formación Complementaria</div>
+        </div>
+
+        <div class="semesters-grid" id="semestersGrid">
+            <!-- Los semestres se generarán con JavaScript -->
+        </div>
+
+        <button class="reset-btn" onclick="resetProgress()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+        </button>
+
+        <div class="congrats" id="congratsModal">
+            <h2 style="margin-bottom: 15px; font-size: 1.5rem;">¡Felicidades!</h2>
+            <p style="margin-bottom: 10px;">Has completado toda la carrera.</p>
+            <p style="color: #7f8c8d; font-size: 0.9rem;">Eres oficialmente un Ingeniero de Sistemas</p>
+        </div>
+    </div>
+
+    <script>
+        // Datos actualizados de la malla curricular con créditos exactos
+        const curriculum = {
+            1: [
+                { name: 'Álgebra Lineal', credits: 3, category: 'basicas' },
+                { name: 'Aprendizaje Autónomo', credits: 3, category: 'complementaria' },
+                { name: 'Cálculo I', credits: 3, category: 'basicas' },
+                { name: 'Introducción a la Ingeniería', credits: 3, category: 'ingenieria' },
+                { name: 'Lógica Computacional', credits: 3, category: 'ingenieria' },
+                { name: 'Universidad y Contexto', credits: 2, category: 'complementaria' }
+            ],
+            2: [
+                { name: 'Cálculo II', credits: 3, category: 'basicas' },
+                { name: 'Competencias Comunicativas', credits: 2, category: 'complementaria' },
+                { name: 'Física I', credits: 3, category: 'basicas' },
+                { name: 'Inglés I', credits: 2, category: 'complementaria' },
+                { name: 'Programación I', credits: 4, category: 'aplicada' },
+                { name: 'Teoría General de Sistemas', credits: 2, category: 'aplicada' }
+            ],
+            3: [
+                { name: 'Cálculo III', credits: 3, category: 'basicas' },
+                { name: 'Física II', credits: 3, category: 'basicas' },
+                { name: 'Humanidades', credits: 3, category: 'complementaria' },
+                { name: 'Inglés II', credits: 2, category: 'complementaria' },
+                { name: 'Programación II', credits: 4, category: 'aplicada' }
+            ],
+            4: [
+                { name: 'Análisis y Diseño de Sistemas I', credits: 3, category: 'aplicada' },
+                { name: 'Ecuaciones Diferenciales', credits: 3, category: 'basicas' },
+                { name: 'Electiva Libre I', credits: 2, category: 'complementaria' },
+                { name: 'Física III', credits: 3, category: 'basicas' },
+                { name: 'Inglés III', credits: 2, category: 'complementaria' },
+                { name: 'Programación III', credits: 4, category: 'aplicada' }
+            ],
+            5: [
+                { name: 'Análisis y Diseño de Sistemas II', credits: 3, category: 'aplicada' },
+                { name: 'Bases de Datos I', credits: 3, category: 'aplicada' },
+                { name: 'Electiva Libre II', credits: 2, category: 'complementaria' },
+                { name: 'Electrónica I', credits: 3, category: 'ingenieria' },
+                { name: 'Inglés IV', credits: 2, category: 'complementaria' },
+                { name: 'Métodos Numéricos', credits: 3, category: 'ingenieria' }
+            ],
+            6: [
+                { name: 'Bases de Datos II', credits: 3, category: 'aplicada' },
+                { name: 'Electiva de Carrera I', credits: 3, category: 'aplicada' },
+                { name: 'Electiva Libre III', credits: 2, category: 'complementaria' },
+                { name: 'Electrónica II', credits: 3, category: 'ingenieria' },
+                { name: 'Emprendimiento e Innovación Tecnológica', credits: 3, category: 'complementaria' },
+                { name: 'Estadística', credits: 3, category: 'ingenieria' }
+            ],
+            7: [
+                { name: 'Economía General', credits: 2, category: 'complementaria' },
+                { name: 'Estadística II', credits: 2, category: 'ingenieria' },
+                { name: 'Ingeniería de Software', credits: 3, category: 'aplicada' },
+                { name: 'Metodología de la Investigación', credits: 3, category: 'complementaria' },
+                { name: 'Programación Lineal', credits: 2, category: 'ingenieria' },
+                { name: 'Telemática', credits: 3, category: 'aplicada' }
+            ],
+            8: [
+                { name: 'Arquitectura del Computador', credits: 3, category: 'aplicada' },
+                { name: 'Constitución Política y Democracia', credits: 2, category: 'complementaria' },
+                { name: 'Electiva de Profundización I', credits: 4, category: 'aplicada' },
+                { name: 'Fundamentos de Administración', credits: 2, category: 'complementaria' },
+                { name: 'Programación No Lineal', credits: 2, category: 'ingenieria' },
+                { name: 'Sistemas Operativos', credits: 3, category: 'aplicada' }
+            ],
+            9: [
+                { name: 'Electiva de Carrera II', credits: 3, category: 'aplicada' },
+                { name: 'Electiva de Profundización II', credits: 4, category: 'aplicada' },
+                { name: 'Formulación y Evaluación de Proyectos', credits: 3, category: 'complementaria' },
+                { name: 'Procesos Estocásticos', credits: 2, category: 'ingenieria' },
+                { name: 'Seminario de Investigación', credits: 3, category: 'aplicada' },
+                { name: 'Teoría de Grafos', credits: 2, category: 'ingenieria' }
+            ],
+            10: [
+                { name: 'Electiva de Profundización III', credits: 4, category: 'aplicada' },
+                { name: 'Ética Profesional', credits: 2, category: 'complementaria' },
+                { name: 'Simulación', credits: 3, category: 'ingenieria' },
+                { name: 'Trabajo de Grado', credits: 5, category: 'aplicada' }
+            ]
+        };
+
+        let completedSubjects = JSON.parse(localStorage.getItem('completedSubjects')) || [];
+
+        function generateGrid() {
+            const grid = document.getElementById('semestersGrid');
+            grid.innerHTML = '';
+
+            Object.entries(curriculum).forEach(([semester, subjects]) => {
+                const semesterDiv = document.createElement('div');
+                semesterDiv.className = 'semester';
+
+                const totalCredits = subjects.reduce((sum, subject) => sum + subject.credits, 0);
+
+                semesterDiv.innerHTML = `
+                    <div class="semester-header">
+                        <div class="semester-title">Semestre ${semester}</div>
+                        <div class="semester-credits">${totalCredits} créditos</div>
+                    </div>
+                `;
+
+                subjects.forEach((subject, index) => {
+                    const subjectId = `${semester}-${index}`;
+                    const isCompleted = completedSubjects.includes(subjectId);
+                    
+                    const subjectDiv = document.createElement('div');
+                    subjectDiv.className = `subject ${subject.category} ${isCompleted ? 'completed' : ''}`;
+                    subjectDiv.onclick = () => toggleSubject(subjectId);
+
+                    subjectDiv.innerHTML = `
+                        <div class="subject-name">${subject.name}</div>
+                        <div class="subject-info">
+                            <span class="subject-category">${getCategoryName(subject.category)}</span>
+                            <span class="subject-credits">${subject.credits} créditos</span>
+                        </div>
+                    `;
+
+                    semesterDiv.appendChild(subjectDiv);
+                });
+
+                grid.appendChild(semesterDiv);
+            });
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'basicas': 'C. Básicas',
+                'ingenieria': 'C.B. Ingeniería',
+                'aplicada': 'Ing. Aplicada',
+                'complementaria': 'F. Complementaria'
+            };
+            return names[category] || category;
+        }
+
+        function toggleSubject(subjectId) {
+            if (completedSubjects.includes(subjectId)) {
+                completedSubjects = completedSubjects.filter(id => id !== subjectId);
+            } else {
+                completedSubjects.push(subjectId);
+            }
+            
+            localStorage.setItem('completedSubjects', JSON.stringify(completedSubjects));
+            generateGrid();
+            updateStats();
+            
+            if (completedSubjects.length === getTotalSubjects()) {
+                showCongrats();
+            }
+        }
+
+        function updateStats() {
+            const totalSubjects = getTotalSubjects();
+            const completedCount = completedSubjects.length;
+            const completedCredits = getCompletedCredits();
+            const percentage = Math.round((completedCount / totalSubjects) * 100);
+
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('completedCredits').textContent = completedCredits;
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+        }
+
+        function getTotalSubjects() {
+            return Object.values(curriculum).flat().length;
+        }
+
+        function getCompletedCredits() {
+            let credits = 0;
+            Object.entries(curriculum).forEach(([semester, subjects]) => {
+                subjects.forEach((subject, index) => {
+                    const subjectId = `${semester}-${index}`;
+                    if (completedSubjects.includes(subjectId)) {
+                        credits += subject.credits;
+                    }
+                });
+            });
+            return credits;
+        }
+
+        function resetProgress() {
+            if (confirm('¿Estás seguro de que quieres reiniciar todo tu progreso?')) {
+                completedSubjects = [];
+                localStorage.removeItem('completedSubjects');
+                generateGrid();
+                updateStats();
+            }
+        }
+
+        function showCongrats() {
+            const modal = document.getElementById('congratsModal');
+            modal.classList.add('show');
+            
+            setTimeout(() => {
+                modal.classList.remove('show');
+            }, 5000);
+        }
+
+        // Inicializar
+        generateGrid();
+        updateStats();
+    </script>
+</body>
+</html>
